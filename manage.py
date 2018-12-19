@@ -23,9 +23,11 @@ manager.add_command('db', MigrateCommand)
 
 @manager.command
 def deploy():
-    from flask_migrate import upgrade
+    from flask_migrate import upgrade, init, migrate
     from app.models import Role, User
     # 把数据库迁移到最新修订版本
+    init()
+    migrate()
     upgrade()
     # 创建用户角色
     Role.insert_roles()
