@@ -26,8 +26,8 @@ class Config:   #这是基类，包含了通用设置
 
 class DevelopmentConfig(Config): #三个子类之一
     DEBUG = True
-    #SQLALCHEMY_DATABASE_URI = 'postgresql+psycopg2://dbuser:qwer1234@10.0.21.62:5432/flaskapp'
-    SQLALCHEMY_DATABASE_URI = 'postgres://mippmihpjrhzmk:3d22b6e1a065561f1175914bae021e7000971f3aa58c1128da59da64ccc23327@ec2-54-243-150-10.compute-1.amazonaws.com:5432/d3h3te0go53sn4'
+    SQLALCHEMY_DATABASE_URI = 'postgresql+psycopg2://dbuser:qwer1234@10.0.21.62:5432/flaskapp_deploytest'
+    #SQLALCHEMY_DATABASE_URI = 'postgres://mippmihpjrhzmk:3d22b6e1a065561f1175914bae021e7000971f3aa58c1128da59da64ccc23327@ec2-54-243-150-10.compute-1.amazonaws.com:5432/d3h3te0go53sn4'
 
 
 class TestingConfig(Config):  #三个子类之一
