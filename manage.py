@@ -33,7 +33,7 @@ def deploy():
     User.add_self_follows()
 
 
-app.run()
+#app.run()
 
-# if __name__ == '__main__':
-#     manager.run()
+if __name__ == '__main__':
+    manager.run()
