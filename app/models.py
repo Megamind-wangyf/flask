@@ -135,6 +135,7 @@ class User(UserMixin, db.Model):
     def ping(self):
         self.last_seen = datetime.utcnow()
         db.session.add(self)
+        db.session.commit()
 
 
     @property
@@ -148,6 +149,8 @@ class User(UserMixin, db.Model):
 
     def verify_password(self, password):
         return check_password_hash(self.password_hash, password)  # 对比数据库中密码散列值和用户输入的密码，正确返回True
+
+
 
 
     # 生成一个令牌，有效期默认一小时
@@ -167,7 +170,12 @@ class User(UserMixin, db.Model):
             return False
         self.confirmed = True
         db.session.add(self)
+        db.session.commit()
         return True
+
+
+
+
 
     def is_administrator(self):
         return self.can(Permission.ADMIN)

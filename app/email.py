@@ -1,3 +1,4 @@
+#coding: utf-8
 from flask import current_app
 from flask import render_template
 from flask_mail import Message
@@ -7,6 +8,7 @@ from threading import Thread
 
 def send_async_email(app, msg):
     with app.app_context():
+        # Flask_mail中的send()函数使用current_app，因此要在激活的程序上下文中运行
         mail.send(msg)
 
 

@@ -10,6 +10,28 @@ from ..email import send_email
 from flask_login import current_user
 
 
+@auth.route('/register', methods=['GET', 'POST'])
+def register():
+    form = RegistrationForm()
+    if form.validate_on_submit():
+        user = User(email=form.email.data,
+                    username=form.username.data,
+                    password=form.password.data)
+        db.session.add(user)
+        db.session.commit()
+        # flash('You can now login.')
+        # return redirect(url_for('auth.login'))
+
+        # 现在我们要生成令牌然后发送邮件
+        token = user.generate_confirmation_token()
+        send_email(user.email, 'Confirmation of your new account', 'auth/email/confirm', user=user, token=token)
+        # 这里给用户发送邮件：收件人，邮件标题，邮件模板，给模板传的参数
+        flash('we have sent a confirmation email to you, please confirm it!!!')
+        return redirect(url_for('main.index'))
+
+    return render_template('auth/register.html', form=form)
+
+
 @auth.route('/login', methods=['GET', 'POST'])
 def login():
     form = LoginForm()  # 创建一个对象
@@ -19,10 +41,11 @@ def login():
         user = User.query.filter_by(email=form.email.data).first()
         if user is not None and user.verify_password(form.password.data):
             login_user(user, form.remember_me.data)
-            next = request.args.get('next')
-            if next is None or not next.startswith('/'):
-                next = url_for('main.index')
-            return redirect(next)
+            # next = request.args.get('next')
+            # if next is None or not next.startswith('/'):
+            #     next = url_for('main.index')
+            # return redirect(next)
+            return redirect(url_for('main.index'))
         flash('Invalid username or password.')
     return render_template('auth/login.html', form=form)
 # 这里需要注意了，这个模板文件需要保存在auth这个文件夹中
@@ -37,28 +60,6 @@ def logout():
     return redirect(url_for('main.index'))
 
 
-@auth.route('/register', methods=['GET', 'POST'])
-def register():
-    form = RegistrationForm()
-    if form.validate_on_submit():
-        user = User(email=form.email.data,
-                    username=form.username.data,
-                    password=form.password.data)
-        db.session.add(user)
-        db.session.commit()
-        # flash('You can now login.')
-        # return redirect(url_for('auth.login'))
-
-        # 现在我们要生成令牌然后发送邮件
-        token = user.generate_confirmation()
-        send_email(user.email, 'Confirmation of your new account', 'auth/email/confirm', user=user, token=token)
-        # 这里给用户发送邮件：收件人，邮件标题，邮件模板，给模板传的参数
-        flash('we have sent a confirmation email to you, please confirm it!!!')
-        return redirect(url_for('main.index'))
-
-    return render_template('auth/register.html', form=form)
-
-
 # 这个是发送给用户的邮件中的路由链接
 @auth.route('/confirm/<token>')
 @login_required  # 这个修饰器会保护这个路由，只有用户打开链接登陆后，才可以执行下面的视图函数
@@ -66,7 +67,7 @@ def confirm(token):
     if current_user.confirmed:
         # 首先检查登录的用户是否已经确认过，如果已经确认过，就不用再做什么工作了，直接重定向到首页
         return redirect(url_for('main.index'))
-    if current_user.confirmed(token):
+    if current_user.confirm(token):
         # 直接调用user模型中的验证令牌方法，直接使用flash来显示验证结果。
         flash('you have confirmed your acount!')
     else:

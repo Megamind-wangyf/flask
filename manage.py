@@ -34,8 +34,7 @@ def deploy():
     # 让所有的用户都关注这个用户
     User.add_self_follows()
 
-
-#app.run()
-
 if __name__ == '__main__':
+    # 这里不使用app.run是因为我们要使用python manage.py shell等功能，如果改成app，那么每次都会直接运行网站程序
+    # 我们这里使用python manage.py runserver来启动整个flask应用
     manager.run()
